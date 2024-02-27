@@ -55,3 +55,7 @@ sim808EVB_G.begin(altSoftSerial_G);
 - `bool                setNmeaSentence(nmeaSentence_t sentence_P);`	Define the last NMEA sentence that parsed
 - `nmeaSentence_t      getNmeaSentence(void);`	Returns the current setting of the last NMEA sentence parsed
 - `time_t              getGnssTime(void);`	Get the time given by the GNSS module. If not available return 0.
+
+<h2>Tutorial: </h2>
+
+For more detailed explanations, please consult the following article: [Coordonnées GPS avec Arduino et la SIM808arduino-et-la-sim808](https://tropratik.fr/coordonnees-gps-avec-arduino-et-la-sim808 "Coordonnées GPS avec Arduino et la SIM808arduino-et-la-sim808")
