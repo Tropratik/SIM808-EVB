@@ -1,7 +1,7 @@
 /*
  * sim808_EVB.cpp - Library to manage the SIM808 Development Kit: https://tropratik.fr/produit/kit-de-developpement-sim808-evb-v3-2-gsm-gprs-gps.
  * Created by Tropratik (https://tropratik.fr).
- * Version 1.0.
+ * Version 1.1
  * license GNU General Public License Version 3 (GPL-3.0)
  */
 
@@ -404,7 +404,7 @@ sim808::reqResult_t sim808::atRequest(char** ppPayload_P, const char* command_P,
             strcpy(*ppPayload_P, pBeginPayload_L);
           }
         }
-		free(pReadChars_L);
+		    free(pReadChars_L);
       }
       free(pAtCommand2_L);
     }
@@ -447,59 +447,66 @@ sim808::reqResult_t sim808::read(char **ppReadChars_P)
       if(sim808Interface->available() > 0)
       {
         *(*ppReadChars_P+countChars_L) = sim808Interface->read();
-        if(*(*ppReadChars_P+countChars_L)=='\n')
-        {
-          trace(F("\\n"));
-        }
-        else if(*(*ppReadChars_P+countChars_L)=='\r')
-        {
-          trace(F("\\r"));
-        }
-        else if ((*(*ppReadChars_P+countChars_L)>126)||(*(*ppReadChars_P+countChars_L)<21))
+        if(  
+            (*(*ppReadChars_P+countChars_L)!='\n')&&
+            (*(*ppReadChars_P+countChars_L)!='\r')&&
+            ((*(*ppReadChars_P+countChars_L)>126)||(*(*ppReadChars_P+countChars_L)<32))
+          )
         {
           trace(F("<!>"));
         }
         else
         {
-          trace(F("%c"), *(*ppReadChars_P+countChars_L));
-        }
-        if(*(*ppReadChars_P+countChars_L) ==0) // Est-ce un caractère de fin de chaine ?
-        {
-		  result_L = REQ_READ_END_OF_STRING;
-          trace(F(" - End of string received"));
-          readAnswer_L = false;
-        }
-        if(strncmp((*ppReadChars_P+countChars_L)-sizeof(AtOk_L)+1, AtOk_L, sizeof(AtOk_L))==0)
-        {
-          result_L = REQ_READ_OK; 
-          trace(F(" - OK received"));
-          countChars_L = countChars_L - sizeof(AtOk_L)+1; // On supprime le statut du message de reponse
-          readAnswer_L = false;
-        }
-        else if(strncmp((*ppReadChars_P+countChars_L)-sizeof(AtError_L)+1, AtError_L, sizeof(AtError_L))==0)
-        {
-          result_L = REQ_READ_ERROR; 
-          trace(F(" - Error received"));
-          countChars_L = countChars_L - sizeof(AtError_L)+1; // On supprime le statut du message de reponse
-          readAnswer_L = false;
-        }
-
-        countChars_L++;
-        if (countChars_L>=countMaxChars_L)
-        {
-          countMaxChars_L+=30;
-          pNextArea_L=(char*)realloc(*ppReadChars_P, countMaxChars_L);
-          if(pNextArea_L == NULL)
+          if(*(*ppReadChars_P+countChars_L)=='\n')
           {
-            trace(F("\nNo more available memory\n\r"));
-            result_L = REQ_PROCESSING_ERROR;
-            readAnswer_L = false;
+            trace(F("\\n"));
+          }
+          else if(*(*ppReadChars_P+countChars_L)=='\r')
+          {
+            trace(F("\\r"));
           }
           else
           {
-            *ppReadChars_P = pNextArea_L;
+            trace(F("%c"), *(*ppReadChars_P+countChars_L));
           }
-        }
+          if(*(*ppReadChars_P+countChars_L) ==0) // Est-ce un caractère de fin de chaine ?
+          {
+            result_L = REQ_READ_END_OF_STRING;
+            trace(F(" - End of string received"));
+            readAnswer_L = false;
+          }
+          if(strncmp((*ppReadChars_P+countChars_L)-sizeof(AtOk_L)+1, AtOk_L, sizeof(AtOk_L))==0)
+          {
+            result_L = REQ_READ_OK; 
+            trace(F(" - OK received"));
+            countChars_L = countChars_L - sizeof(AtOk_L)+1; // On supprime le statut du message de reponse
+            readAnswer_L = false;
+          }
+          else if(strncmp((*ppReadChars_P+countChars_L)-sizeof(AtError_L)+1, AtError_L, sizeof(AtError_L))==0)
+          {
+            result_L = REQ_READ_ERROR; 
+            trace(F(" - Error received"));
+            countChars_L = countChars_L - sizeof(AtError_L)+1; // On supprime le statut du message de reponse
+            readAnswer_L = false;
+          }
+
+          countChars_L++;
+          if (countChars_L>=countMaxChars_L)
+          {
+            countMaxChars_L+=30;
+            pNextArea_L=(char*)realloc(*ppReadChars_P, countMaxChars_L);
+            if(pNextArea_L == NULL)
+            {
+              trace(F("\nNo more available memory\n\r"));
+              result_L = REQ_PROCESSING_ERROR;
+              readAnswer_L = false;
+            }
+            else
+            {
+              *ppReadChars_P = pNextArea_L;
+            }
+          }
+        }        
       }
       else if (chronometre_L>responseDelay)
       {

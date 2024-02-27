@@ -1,7 +1,7 @@
 /*
  * sim808_EVB.h - Library to manage the SIM808 Development Kit: https://tropratik.fr/produit/kit-de-developpement-sim808-evb-v3-2-gsm-gprs-gps.
  * Created by Tropratik (https://tropratik.fr).
- * Version 1.0.
+ * Version 1.1
  * license GNU General Public License Version 3 (GPL-3.0)
  */
 
