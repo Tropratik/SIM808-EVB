@@ -96,7 +96,7 @@ class sim808
   public:
     sim808();
     ~sim808(void);
-    bool                begin(Stream &serial_P);
+    bool                begin(Stream &serial_P); //  Initialization of the library object
     identification_t    getIdentification(void); //  Returns the different identifications of the SIM808
     bool                echoOn(void);   //  Turn on send echo.
     bool                echoOff(void);  //  Turn off send echo.
